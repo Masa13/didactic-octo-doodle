@@ -16,6 +16,9 @@ var isGrowing=false;
 
 var drawDot = function drawDot(){
     ctx.beginPath();
+    window.cancelAnimationFrame(requestId);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.strokeRect(0,0,canvas.width,canvas.height);
     if (radius >= canvas.width/2 || radius <= 0){
 	isGrowing = !isGrowing;
     }
@@ -25,32 +28,39 @@ var drawDot = function drawDot(){
 	ctx.clearRect(0,0,canvas.width,canvas.height);
 	ctx.strokeRect(0,0,canvas.width,canvas.height);
 	ctx.stroke();
-    }
-    ctx.arc(canvas.width/2,canvas.height/2,radius,0,2*Math.PI);
+    } 
+   ctx.arc(canvas.width/2,canvas.height/2,radius,0,2*Math.PI);
     ctx.fill();
     ctx.closePath();
     requestId = window.requestAnimationFrame(drawDot);
 };
 
-var xpos = 0;
-var ypos = 0;
-var xmag = 1;
-var ymag = 1;
 var dvd = function dvd(){
-    if (xpos < 0 || xpos >= canvas.width - logo.width){
-	xmag *= -1;
-	ctx.strokeRect(0,0,canvas.width,canvas.height);
-	ctx.stroke();
+    window.cancelAnimationFrame(requestId);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.strokeRect(0,0,canvas.width,canvas.height);
+    var xpos = 0;
+    var ypos = 0;
+    var xmag = 1;
+    var ymag = 1;
+    
+    var moveDvd = function moveDvd() {
+	if (xpos < 0 || xpos >= canvas.width - logo.width){
+	    xmag *= -1;
+	    ctx.strokeRect(0,0,canvas.width,canvas.height);
+	    //ctx.stroke();
+	}
+	if (ypos < 0 || ypos >= canvas.height - logo.height){
+	    ymag *= -1;
+	    ctx.strokeRect(0,0,canvas.width,canvas.height);
+	    //ctx.stroke();
+	}
+	xpos += xmag;
+	ypos += ymag;
+	ctx.drawImage(logo,xpos,ypos,logo.width,logo.height);
+	requestId = window.requestAnimationFrame(moveDvd);
     }
-    if (ypos < 0 || ypos >= canvas.height - logo.height){
-	ymag *= -1;
-	ctx.strokeRect(0,0,canvas.width,canvas.height);
-	ctx.stroke();
-    }
-    xpos += xmag;
-    ypos += ymag;
-    ctx.drawImage(logo,xpos,ypos,logo.width,logo.height);
-    requestId = window.requestAnimationFrame(dvd);
+    moveDvd();
 };
 
 var stop = function stop(){
